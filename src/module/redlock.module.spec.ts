@@ -4,7 +4,10 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { RedlockModule } from './redlock.module';
 import { RedlockService } from '../service/redlock.service';
 import type { RedisAdapter } from 'redlock-universal';
-import type { RedlockModuleOptions, RedlockOptionsFactory } from '../interfaces/redlock-module-options.interface';
+import type {
+  RedlockModuleOptions,
+  RedlockOptionsFactory,
+} from '../interfaces/redlock-module-options.interface';
 
 describe('RedlockModule', () => {
   let mockAdapter: RedisAdapter;
