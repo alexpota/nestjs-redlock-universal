@@ -24,14 +24,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - SimpleLock for 1-2 Redis nodes
   - RedLock (distributed) for 3+ Redis nodes
 - **TypeScript Support**: Full type safety with strict mode
-- **Comprehensive Tests**: 35 unit tests with 79% coverage
-
-### Documentation
-
-- Comprehensive README with quick start guide
-- API reference with examples
-- Configuration examples (sync and async)
-- Best practices for lock key naming
-- Common use cases and patterns
+- **Test Coverage**: 52 tests passing (38 unit, 14 integration)
 
 [0.1.0]: https://github.com/alexpota/nestjs-redlock-universal/releases/tag/v0.1.0
