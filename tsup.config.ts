@@ -4,47 +4,23 @@ export default defineConfig({
   // Entry points
   entry: ['src/index.ts'],
 
-  // Output formats
-  format: ['esm', 'cjs'],
+  // Output formats - Build both formats for proper metadata
+  format: ['cjs', 'esm'],
 
-  // Output options
-  outDir: 'dist',
+  // TypeScript - Generate declaration files
+  dts: true,
+
+  // Build configuration
+  splitting: false,
+  sourcemap: true,
   clean: true,
 
-  // Code generation
-  target: 'es2022',
-  minify: false, // Keep readable for debugging
-  sourcemap: false, // Following redlock-universal best practice
+  // CRITICAL: Preserve decorator metadata
+  keepNames: true,
 
-  // TypeScript
-  dts: true, // Generate .d.ts files
-  splitting: false, // Keep simple for library
+  // Explicitly use tsconfig for decorator settings
+  tsconfig: './tsconfig.json',
 
-  // Bundling
-  treeshake: true,
-  external: [
-    // Peer dependencies should be external
-    '@nestjs/common',
-    '@nestjs/core',
-    'redlock-universal',
-    'reflect-metadata',
-  ],
-
-  // Banner for CJS compatibility
-  banner: {
-    js: `
-/**
- * nestjs-redlock-universal
- * NestJS integration for redlock-universal
- */`.trim(),
-  },
-
-  // Platform
-  platform: 'node',
-
-  // esbuild options
-  esbuildOptions(options) {
-    options.conditions = ['node'];
-    options.mainFields = ['module', 'main'];
-  },
+  // External dependencies - don't bundle peer deps
+  external: ['@nestjs/common', '@nestjs/core', 'redlock-universal', 'reflect-metadata'],
 });
