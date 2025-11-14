@@ -1,5 +1,5 @@
 import type { ModuleMetadata, Type } from '@nestjs/common';
-import type { RedisAdapter } from 'redlock-universal';
+import type { RedisAdapter, ILogger } from 'redlock-universal';
 
 /**
  * Configuration options for RedlockModule
@@ -34,6 +34,12 @@ export interface RedlockModuleOptions {
    * @default DEFAULT_TTL_MS (30000ms / 30 seconds)
    */
   readonly defaultTtl?: number;
+
+  /**
+   * Optional logger instance for lock operations
+   * Supports Winston, Pino (via createPinoAdapter), and Bunyan (via createBunyanAdapter)
+   */
+  readonly logger?: ILogger;
 }
 
 /**
