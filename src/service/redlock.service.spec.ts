@@ -3,7 +3,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { RedlockService } from './redlock.service';
 import { REDLOCK_MODULE_OPTIONS } from '../constants';
 import type { RedlockModuleOptions } from '../interfaces/redlock-module-options.interface';
-import type { RedisAdapter } from 'redlock-universal';
+import type { RedisAdapter, ILogger } from 'redlock-universal';
 
 describe('RedlockService', () => {
   let service: RedlockService;
@@ -275,6 +275,66 @@ describe('RedlockService', () => {
 
       // Service should still work after cleanup
       expect(service).toBeDefined();
+    });
+  });
+
+  describe('logger support', () => {
+    it('should accept logger in module options', async () => {
+      const mockLogger: ILogger = {
+        debug: vi.fn(),
+        info: vi.fn(),
+        warn: vi.fn(),
+        error: vi.fn(),
+      };
+
+      const moduleOptions: RedlockModuleOptions = {
+        nodes: [mockAdapter],
+        defaultTtl: 30000,
+        logger: mockLogger,
+      };
+
+      const module: TestingModule = await Test.createTestingModule({
+        providers: [
+          RedlockService,
+          {
+            provide: REDLOCK_MODULE_OPTIONS,
+            useValue: moduleOptions,
+          },
+        ],
+      }).compile();
+
+      const serviceWithLogger = module.get<RedlockService>(RedlockService);
+      await serviceWithLogger.onModuleInit();
+
+      expect(serviceWithLogger).toBeDefined();
+    });
+
+    it('should work without logger (optional)', async () => {
+      const moduleOptions: RedlockModuleOptions = {
+        nodes: [mockAdapter],
+        defaultTtl: 30000,
+      };
+
+      const module: TestingModule = await Test.createTestingModule({
+        providers: [
+          RedlockService,
+          {
+            provide: REDLOCK_MODULE_OPTIONS,
+            useValue: moduleOptions,
+          },
+        ],
+      }).compile();
+
+      const serviceWithoutLogger = module.get<RedlockService>(RedlockService);
+      await serviceWithoutLogger.onModuleInit();
+
+      expect(serviceWithoutLogger).toBeDefined();
+
+      const mockSetNX = vi.fn().mockResolvedValue('OK');
+      mockAdapter.setNX = mockSetNX;
+
+      const handle = await serviceWithoutLogger.acquire('test:lock');
+      expect(handle).toBeDefined();
     });
   });
 });

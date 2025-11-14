@@ -151,6 +151,7 @@ RedlockModule.forRoot({
   retryAttempts: 3,         // Number of retry attempts
   retryDelay: 200,          // Delay between retries in milliseconds
   quorum: 2,                // Minimum nodes for quorum (default: majority)
+  logger: winstonLogger,    // Optional: Winston, Pino, or Bunyan logger
 })
 ```
 
@@ -193,6 +194,65 @@ RedlockModule.forRoot({
   ],
 })
 ```
+
+### Logger Integration
+
+The module supports external loggers for lock operations. Winston works directly, while Pino and Bunyan require adapters:
+
+#### Winston (Direct Support)
+
+```typescript
+import * as winston from 'winston';
+
+const logger = winston.createLogger({
+  level: 'info',
+  format: winston.format.json(),
+  transports: [new winston.transports.Console()],
+});
+
+RedlockModule.forRoot({
+  nodes: [new NodeRedisAdapter(redis1)],
+  logger, // Winston works directly
+})
+```
+
+#### Pino (Requires Adapter)
+
+```typescript
+import pino from 'pino';
+import { createPinoAdapter } from 'redlock-universal';
+
+const pinoLogger = pino({ level: 'info' });
+const logger = createPinoAdapter(pinoLogger);
+
+RedlockModule.forRoot({
+  nodes: [new NodeRedisAdapter(redis1)],
+  logger,
+})
+```
+
+#### Bunyan (Requires Adapter)
+
+```typescript
+import * as bunyan from 'bunyan';
+import { createBunyanAdapter } from 'redlock-universal';
+
+const bunyanLogger = bunyan.createLogger({ name: 'myapp', level: 'info' });
+const logger = createBunyanAdapter(bunyanLogger);
+
+RedlockModule.forRoot({
+  nodes: [new NodeRedisAdapter(redis1)],
+  logger,
+})
+```
+
+**Supported Loggers:**
+
+| Logger          | Works Directly | Adapter Needed               |
+| --------------- | -------------- | ---------------------------- |
+| Winston         | ✅ Yes         | No                           |
+| Pino            | ⚠️ Via Adapter | `createPinoAdapter()`        |
+| Bunyan          | ⚠️ Via Adapter | `createBunyanAdapter()`      |
 
 ## API Reference
 

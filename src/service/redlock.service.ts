@@ -36,6 +36,7 @@ export class RedlockService implements OnModuleInit, OnModuleDestroy {
           defaultRetryDelay: retryConfig.retryDelay,
         }),
         defaultTTL: this.defaultTtl,
+        ...(this.options.logger !== undefined && { logger: this.options.logger }),
       };
 
       this.lockManager = new LockManager(config);
