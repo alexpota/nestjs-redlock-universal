@@ -1,0 +1,6 @@
+{
+  "high": true,
+  "moderate": true,
+  "allowlist": [],
+  "_comment": "Security audit configuration for CI/CD pipeline"
+}
