@@ -1,6 +1,6 @@
 # nestjs-redlock-universal
 
-> NestJS integration for [redlock-universal](https://www.npmjs.com/package/redlock-universal) - Distributed Redis locks with decorators and dependency injection
+> NestJS integration for [redlock-universal](https://www.npmjs.com/package/redlock-universal) - Distributed Redis and Valkey locks with decorators and dependency injection
 
 [![npm version](https://img.shields.io/npm/v/nestjs-redlock-universal.svg)](https://www.npmjs.com/package/nestjs-redlock-universal)
 [![npm downloads](https://img.shields.io/npm/dm/nestjs-redlock-universal.svg)](https://www.npmjs.com/package/nestjs-redlock-universal)
@@ -9,22 +9,24 @@
 
 ## Overview
 
-NestJS wrapper for [redlock-universal](https://www.npmjs.com/package/redlock-universal), providing **distributed Redis locks** through NestJS decorators, modules, and dependency injection.
+NestJS wrapper for [redlock-universal](https://www.npmjs.com/package/redlock-universal), providing **distributed Redis and Valkey locks** through NestJS decorators, modules, and dependency injection.
 
 ## Features
 
 - **NestJS Native**: First-class integration with dependency injection and lifecycle hooks
-- **Distributed Locks**: Redlock algorithm for multi-instance Redis setups
+- **Distributed Locks**: Redlock algorithm for multi-instance Redis/Valkey setups
 - **Simple API**: Method decorator for zero-boilerplate distributed locking
 - **High Performance**: <1ms lock acquisition with automatic extension
 - **Type-Safe**: Full TypeScript support with strict type checking
-- **Universal**: Works with both `node-redis` v4+ and `ioredis` v5+ clients
+- **Universal**: Works with `node-redis` v4+, `ioredis` v5+, and Valkey GLIDE v2+
 
 ## Table of Contents
 
 - [Installation](#installation)
 - [Quick Start](#quick-start)
 - [Configuration](#configuration)
+  - [Using ioredis](#using-ioredis)
+  - [Using Valkey GLIDE](#using-valkey-glide)
 - [API Reference](#api-reference)
 - [Advanced Usage](#advanced-usage)
 - [Testing](#testing)
@@ -39,7 +41,7 @@ This package wraps `redlock-universal`, so you need to install both packages:
 npm install nestjs-redlock-universal redlock-universal
 ```
 
-You'll also need a Redis client:
+You'll also need a Redis/Valkey client:
 
 ```bash
 # For node-redis
@@ -47,6 +49,9 @@ npm install redis
 
 # OR for ioredis
 npm install ioredis
+
+# OR for Valkey GLIDE (official Valkey client)
+npm install @valkey/valkey-glide
 ```
 
 ## Quick Start
@@ -55,8 +60,7 @@ npm install ioredis
 
 ```typescript
 import { Module } from '@nestjs/common';
-import { RedlockModule } from 'nestjs-redlock-universal';
-import { NodeRedisAdapter } from 'redlock-universal';
+import { RedlockModule, NodeRedisAdapter } from 'nestjs-redlock-universal';
 import { createClient } from 'redis';
 
 // Create and connect Redis clients
@@ -138,8 +142,7 @@ export class OrderService {
 ### Synchronous Configuration
 
 ```typescript
-import { RedlockModule } from 'nestjs-redlock-universal';
-import { NodeRedisAdapter } from 'redlock-universal';
+import { RedlockModule, NodeRedisAdapter } from 'nestjs-redlock-universal';
 
 RedlockModule.forRoot({
   nodes: [
@@ -159,6 +162,7 @@ RedlockModule.forRoot({
 
 ```typescript
 import { ConfigService } from '@nestjs/config';
+import { RedlockModule, NodeRedisAdapter } from 'nestjs-redlock-universal';
 
 RedlockModule.forRootAsync({
   useFactory: async (configService: ConfigService) => {
@@ -179,7 +183,7 @@ RedlockModule.forRootAsync({
 ### Using ioredis
 
 ```typescript
-import { IoredisAdapter } from 'redlock-universal';
+import { RedlockModule, IoredisAdapter } from 'nestjs-redlock-universal';
 import Redis from 'ioredis';
 
 const redis1 = new Redis({ host: 'localhost', port: 6379 });
@@ -191,6 +195,32 @@ RedlockModule.forRoot({
     new IoredisAdapter(redis1),
     new IoredisAdapter(redis2),
     new IoredisAdapter(redis3),
+  ],
+})
+```
+
+### Using Valkey GLIDE
+
+```typescript
+import { RedlockModule, GlideAdapter } from 'nestjs-redlock-universal';
+import { GlideClient } from '@valkey/valkey-glide';
+
+// Create Valkey GLIDE clients
+const valkey1 = await GlideClient.createClient({
+  addresses: [{ host: 'localhost', port: 6379 }],
+});
+const valkey2 = await GlideClient.createClient({
+  addresses: [{ host: 'localhost', port: 6380 }],
+});
+const valkey3 = await GlideClient.createClient({
+  addresses: [{ host: 'localhost', port: 6381 }],
+});
+
+RedlockModule.forRoot({
+  nodes: [
+    new GlideAdapter(valkey1),
+    new GlideAdapter(valkey2),
+    new GlideAdapter(valkey3),
   ],
 })
 ```
@@ -362,6 +392,9 @@ export class AdvancedService {
 For development or single-instance deployments:
 
 ```typescript
+import { RedlockModule, NodeRedisAdapter } from 'nestjs-redlock-universal';
+import { createClient } from 'redis';
+
 const redis = createClient({ url: 'redis://localhost:6379' });
 await redis.connect();
 
@@ -535,7 +568,7 @@ Most NestJS Redis libraries focus on caching. This library is purpose-built for 
 - ✅ Automatic lock extension via `using()`
 - ✅ NestJS decorator for zero-boilerplate
 - ✅ Built on `redlock-universal`
-- ✅ Universal Redis client support (node-redis + ioredis)
+- ✅ Universal Redis/Valkey client support (node-redis, ioredis, Valkey GLIDE)
 
 ## License
 

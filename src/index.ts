@@ -21,3 +21,6 @@ export {
   DEFAULT_RETRY_DELAY_MS,
   MIN_NODES_FOR_REDLOCK,
 } from './constants';
+
+// Re-export adapters from redlock-universal for convenience
+export { NodeRedisAdapter, IoredisAdapter, GlideAdapter } from 'redlock-universal';
