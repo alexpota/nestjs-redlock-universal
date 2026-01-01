@@ -1,6 +1,6 @@
 {
   "name": "nestjs-redlock-universal",
-  "version": "0.2.3",
+  "version": "0.3.0",
   "description": "NestJS integration for redlock-universal - Distributed Redis and Valkey locks with decorators, modules, and dependency injection",
   "keywords": [
     "nestjs",
