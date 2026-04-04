@@ -6,6 +6,7 @@
 [![npm downloads](https://img.shields.io/npm/dm/nestjs-redlock-universal.svg)](https://www.npmjs.com/package/nestjs-redlock-universal)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue.svg)](https://www.typescriptlang.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Sponsor](https://img.shields.io/badge/Sponsor-%E2%9D%A4-pink?logo=github)](https://github.com/sponsors/alexpota)
 
 ## Overview
 
