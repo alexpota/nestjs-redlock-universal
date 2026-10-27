@@ -7,4 +7,8 @@ export default defineConfig({
     include: ['test/**/*.test.ts'],
     testTimeout: 30000,
   },
+  // Test files sit outside tsconfig "include", so enable legacy decorators explicitly
+  oxc: {
+    decorator: { legacy: true },
+  },
 });
