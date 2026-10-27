@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0]
+
+### Added
+
+- **NestJS 12 Support**: `@nestjs/common` and `@nestjs/core` peer dependency ranges now include `^12.0.0`
+- CI runs type checks, unit tests and integration tests against NestJS 11 and 12
+
+### Changed
+
+- Releases are published from GitHub Actions with npm trusted publishing (OIDC), with provenance
+
+### Documentation
+
+- Added supported NestJS and Node.js versions to the installation section
+- Added contributing guidelines
+
 ## [0.3.0]
 
 ### Added
