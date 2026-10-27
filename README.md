@@ -36,6 +36,8 @@ NestJS wrapper for [redlock-universal](https://www.npmjs.com/package/redlock-uni
 
 ## Installation
 
+Supports NestJS 8–12 (tested on 11 and 12) on Node.js 22 or later (NestJS 12 requires Node.js 22.12 or later).
+
 This package wraps `redlock-universal`, so you need to install both packages:
 
 ```bash
