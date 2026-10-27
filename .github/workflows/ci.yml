@@ -34,8 +34,12 @@ jobs:
         run: npm run format:check
 
   type-check:
-    name: TypeScript Type Check
+    name: TypeScript Type Check (NestJS ${{ matrix.nestjs }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        nestjs: ['11', '12']
 
     steps:
       - name: Checkout code
@@ -49,13 +53,22 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      # NestJS 12 comes from package-lock.json
+      - name: Install NestJS ${{ matrix.nestjs }}
+        if: matrix.nestjs != '12'
+        run: npm install --no-save @nestjs/common@${{ matrix.nestjs }} @nestjs/core@${{ matrix.nestjs }} @nestjs/testing@${{ matrix.nestjs }}
 
       - name: Run type check
         run: npm run type-check
 
   test:
-    name: Unit Tests
+    name: Unit Tests (NestJS ${{ matrix.nestjs }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        nestjs: ['11', '12']
 
     steps:
       - name: Checkout code
@@ -70,12 +83,21 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # NestJS 12 comes from package-lock.json
+      - name: Install NestJS ${{ matrix.nestjs }}
+        if: matrix.nestjs != '12'
+        run: npm install --no-save @nestjs/common@${{ matrix.nestjs }} @nestjs/core@${{ matrix.nestjs }} @nestjs/testing@${{ matrix.nestjs }}
+
       - name: Run unit tests
         run: npm test
 
   integration-test:
-    name: Integration Tests
+    name: Integration Tests (NestJS ${{ matrix.nestjs }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        nestjs: ['11', '12']
 
     services:
       redis1:
@@ -121,6 +143,11 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # NestJS 12 comes from package-lock.json
+      - name: Install NestJS ${{ matrix.nestjs }}
+        if: matrix.nestjs != '12'
+        run: npm install --no-save @nestjs/common@${{ matrix.nestjs }} @nestjs/core@${{ matrix.nestjs }} @nestjs/testing@${{ matrix.nestjs }}
+
       - name: Run integration tests
         run: npm run test:integration
 
@@ -149,6 +176,12 @@ jobs:
           test -f dist/index.js || (echo "dist/index.js not found" && exit 1)
           test -f dist/index.cjs || (echo "dist/index.cjs not found" && exit 1)
           test -f dist/index.d.ts || (echo "dist/index.d.ts not found" && exit 1)
+
+      # NestJS 12 is ESM-only; the CommonJS build loads it through require(esm)
+      - name: Load ESM and CommonJS entry points
+        run: |
+          node --input-type=module -e "await import('./dist/index.js')"
+          node -e "require('./dist/index.cjs')"
 
   # Summary job - requires all other jobs to pass
   ci-success:
